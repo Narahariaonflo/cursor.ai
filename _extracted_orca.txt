@@ -1,0 +1,80 @@
+# AI Website Maintenance Agent Research
+Purpose: Maintenance Agent.
+## 1. Research Summary (5 Points)
+Website maintenance should go beyond uptime monitoring by combining performance, SEO, accessibility, visual regression, broken link detection, console log analysis, and AI-driven recommendations into a single workflow.
+Modern browser agents can understand webpages and adapt to UI changes, making them more reliable than traditional scripted automation tools.
+Vision-capable AI models enable visual quality checks such as layout shifts, overlapping elements, responsive design issues, typography consistency, and branding validation.
+Multi-agent architectures (Planner, Browser, Vision, Code Analyzer, Reporter) provide better scalability, reliability, and maintainability than a single monolithic AI agent.
+Human approval should remain part of the workflow for high-impact actions such as deployments and production code changes while allowing AI to automate analysis and recommendations.
+## 2. Challenges to Resolve Before Development
+Clearly define the MVP scope to avoid building an overly complex system in the first release.
+Control infrastructure and AI costs through incremental scans, intelligent scheduling, caching, and change detection.
+Reduce false positives by comparing against previous baselines and configurable thresholds.
+Handle modern web application complexity including authentication, cookie banners, lazy loading, feature flags, and dynamic content.
+Prioritize findings by business impact so users receive actionable reports instead of long issue lists.
+## 3. Optimal Model Stack
+Task | Recommended Model | Reason
+Website reasoning | GPT-5.5 | Planning, reasoning, summarization, and coding.
+Vision analysis | GPT-5.5 Vision | Detect UI and visual regressions from screenshots.
+Code generation | GPT-5.5 | Generate code fixes and pull request suggestions.
+Fast classification | GPT-5.5 mini | Lower-cost issue triage and categorization.
+Embeddings | text-embedding-3-large (or equivalent) | Historical issue similarity and retrieval.
+
+### Supporting Technologies
+Browser Automation: Playwright, Browserbase (optional), Stagehand
+Performance: Lighthouse, PageSpeed Insights API
+Accessibility: axe-core
+SEO: DOM parsing and metadata analysis
+## 4. Model Guardrails
+### Allowed Actions
+Read website content
+Capture screenshots
+Run Lighthouse and accessibility scans
+Analyze SEO
+Inspect console logs
+Generate maintenance reports
+Suggest fixes and create pull requests
+### Require User Approval
+Deploy code
+Merge pull requests
+Modify production systems
+Change DNS
+Edit databases
+Publish content
+### Never Execute Automatically
+Run arbitrary production shell commands
+Rotate secrets
+Expose environment variables
+Modify billing or authentication settings
+### Operational Limits
+Confidence thresholds before automated actions
+API usage budgets
+Page scan limits
+Retry limits
+Timeouts
+Recursion depth limits
+## 5. Implementation Guidelines
+### Phase 1 – MVP
+Crawl website pages.
+Launch browser agent.
+Capture screenshots.
+Run Lighthouse.
+Perform accessibility and SEO scans.
+Collect console logs.
+Analyze findings using GPT-5.5.
+Generate prioritized maintenance report.
+### Phase 2 – AI Maintenance Engineer
+Root cause analysis
+Regression detection
+Historical trend analysis
+Suggested code patches
+Weekly maintenance reports
+Pull request generation
+### Phase 3 – Autonomous Operations
+Generate fixes
+Run tests
+Validate changes
+Create pull requests
+Deploy only after explicit user approval
+## Recommendation
+Position ORCA as an AI Website Reliability Engineer rather than a simple Website Maintenance Agent. This positioning emphasizes continuous monitoring, intelligent diagnostics, prioritization, and assisted remediation while keeping humans in control of production changes.

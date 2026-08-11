@@ -1,0 +1,93 @@
+AI Website Health Orchestrator Agent
+High Level Design
+Version 1.1 | Status: Draft | Scope: Website Analysis MVP
+1. Overview
+This High Level Design describes an Orchestrator Agent that coordinates specialized Web Agents to analyse the current condition of a public website. The MVP focuses on identifying measurable website problems, collecting evidence, prioritising findings, and producing a downloadable report. It does not modify the website, connect to source control, create pull requests, or deploy fixes.
+The user provides a website URL and scan preferences. The orchestrator creates a scan plan, invokes the relevant agents, tracks execution, consolidates duplicate findings, assigns severity and confidence, and generates a final report in HTML or Markdown format.
+2. MVP Objectives
+Identify SEO, performance, latency, broken-link, browser-console, HTML-document, security, and basic accessibility issues.
+Attach evidence to every finding, including URL, metric, response detail, DOM snippet, console message, or screenshot reference.
+Run independent scanners in parallel where possible to reduce total analysis time.
+Produce a clear, prioritised website health report that the user can download as HTML or Markdown.
+Keep the first release read-only and independent of GitHub or any source-code repository.
+3. System Context
+The system sits between the user and the target website. It uses browser automation and specialised analysis tools to inspect public pages. Findings and scan artifacts are stored only for report generation and the configured retention period. The final report is presented in the application and can be downloaded without requiring a GitHub integration.
+
+Figure 1. Focused MVP architecture
+4. Logical Architecture
+4.1 Orchestrator Agent
+The Orchestrator Agent is the control plane for a website analysis run. It validates the target, creates the page and task plan, applies crawl limits, dispatches agents, monitors failures and retries, merges findings, and instructs the Report Generator to create the final downloadable output.
+4.2 Specialised Web Agents
+Agent
+Responsibility
+SEO Agent
+Titles, descriptions, canonical tags, robots directives, sitemap presence, headings, structured data, Open Graph and social metadata.
+Performance Agent
+Home-page and selected-page load time, Lighthouse metrics, Core Web Vitals, render-blocking resources, unused assets and optimisation opportunities.
+Latency Agent
+DNS, connection, TLS, time-to-first-byte, document response time, slow resources and selected API/network request latency.
+Broken Link Agent
+Internal and external links, status codes, redirect chains, missing resources and malformed URLs.
+Browser Console Agent
+JavaScript errors, unhandled promise rejections, failed resource loads, deprecation warnings and relevant browser security messages.
+HTML Document Analyzer
+Document structure, duplicate or missing tags, heading order, invalid nesting, language declaration, viewport settings, forms and semantic markup.
+Security Agent
+Exposed API keys, tokens or credentials in HTML and client-side assets; mixed content; insecure forms; and missing security headers.
+Accessibility Agent
+Basic automated checks using axe-core, including labels, contrast indications, landmark issues and keyboard-related rule violations.
+Report Generator
+Normalises, deduplicates, scores and groups findings, then renders the final HTML and Markdown reports.
+5. Scan Data Flow
+1. User submits a public website URL and optional limits such as maximum pages, device profile and scan depth.
+2. Orchestrator validates the target and applies SSRF and allow/deny policies.
+3. Crawler discovers eligible pages and builds the scan queue.
+4. Orchestrator invokes browser and specialised agents in parallel.
+5. Each agent returns structured findings and evidence to the orchestrator.
+6. Orchestrator deduplicates related findings, calculates priority and prepares the scan summary.
+7. Report Generator creates both HTML and Markdown versions.
+8. User reviews the result in the application and downloads the preferred format.
+6. Report and Download
+GitHub is not required for the MVP. At the end of each successful or partially successful analysis, the system must provide a report preview and explicit download actions.
+HTML report: a styled, self-contained file suitable for opening in a browser and sharing with business or engineering stakeholders.
+Markdown report: a portable text-based file suitable for documentation tools, ticket creation, repositories, and further editing.
+Optional raw evidence package in a later phase: JSON findings, screenshots, Lighthouse output and console logs.
+Recommended file names: website-health-report_<domain>_<timestamp>.html and website-health-report_<domain>_<timestamp>.md.
+6.1 Report Structure
+Executive summary and overall health score
+Top critical and high-priority issues
+Findings grouped by agent/category
+Affected URLs and evidence
+Impact explanation and recommended remediation
+Scan coverage, limitations, errors and timestamp
+7. Integrations
+Integration
+Purpose
+Playwright
+Browser rendering, network events, DOM snapshots, screenshots and console capture.
+Lighthouse
+Performance, SEO and selected best-practice metrics.
+PageSpeed Insights API
+Optional field and lab performance data when configured.
+axe-core
+Automated accessibility checks in the rendered page context.
+HTML parser/validator
+Document structure and markup analysis.
+Secret detection rules
+Pattern and entropy-based checks for exposed client-side secrets.
+LLM service
+Finding explanation, deduplication assistance and prioritised report narrative; not the primary evidence source.
+8. Cross-Cutting Concerns
+Security: TLS, target validation, SSRF protection, restricted outbound access, safe browser isolation and secret masking in reports.
+Privacy: minimise captured personal information and define retention for screenshots, DOM snapshots and logs.
+Reliability: retries, timeouts, partial scan completion and clear agent-level failure reporting.
+Cost control: limits for pages, browser minutes, PSI calls, screenshots and LLM tokens.
+Observability: correlation IDs, scan duration, agent duration, failure rate and structured logs.
+Multi-tenancy: isolate scan metadata, artifacts and downloadable reports by tenant.
+9. Out of Scope for MVP
+GitHub, GitLab or source-repository integration.
+Automatic code changes, patches, pull requests or deployment.
+Fully autonomous remediation of detected issues.
+Authenticated application scanning beyond explicitly supported login patterns.
+Legal certification for accessibility, security or compliance.
+Native mobile application analysis.
